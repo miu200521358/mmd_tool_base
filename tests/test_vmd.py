@@ -14,7 +14,9 @@ def test_read_by_filepath_error():
 
     reader = VmdReader()
     with pytest.raises(MParseException):
-        reader.read_by_filepath(os.path.join("tests", "resources", "サンプルモデル.pmx"))
+        reader.read_by_filepath(
+            os.path.join("tests", "resources", "サンプルモデル.pmx")
+        )
 
 
 def test_read_by_filepath_ok_calc() -> None:
@@ -2856,6 +2858,503 @@ def test_read_by_filepath_ok_arm_ik_2() -> None:
     assert np.isclose(
         np.array([12.620306, 14.795185, -2.295859]),
         bone_matrixes["左人指先", 3182].position.vector,
+        atol=0.01,
+    ).all()
+
+
+def test_read_by_filepath_ok_ik() -> None:
+
+    import numpy as np
+
+    from mlib.pmx.pmx_collection import PmxModel
+    from mlib.pmx.pmx_reader import PmxReader
+    from mlib.vmd.vmd_collection import VmdMotion
+    from mlib.vmd.vmd_reader import VmdReader
+
+    vmd_reader = VmdReader()
+    motion: VmdMotion = vmd_reader.read_by_filepath(
+        "C:/MMD/mmd_base/tests/resources/唱(ダンスのみ)_0274F.vmd"
+    )
+    pmx_reader = PmxReader()
+    model: PmxModel = pmx_reader.read_by_filepath(
+        "D:/MMD/MikuMikuDance_v926x64/UserFile/Model/VOCALOID/初音ミク/ISAO式ミク/I_ミクv4/Miku_V4_準標準.pmx"
+    )
+
+    # キーフレ
+    bone_matrixes = motion.animate_bone([0], model)
+
+    assert np.isclose(
+        np.array([0, 0, 0]),
+        bone_matrixes["全ての親", 0].position.vector,
+    ).all()
+    assert np.isclose(
+        np.array([0.04952335, 9.0, 1.72378033]),
+        bone_matrixes["センター", 0].position.vector,
+    ).all()
+    assert np.isclose(
+        np.array([0.04952335, 7.97980869, 1.72378033]),
+        bone_matrixes["グルーブ", 0].position.vector,
+    ).all()
+
+    assert np.isclose(
+        np.array([0.04952335, 11.02838314, 2.29172656]),
+        bone_matrixes["腰", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([0.04952335, 11.9671191, 1.06765032]),
+        bone_matrixes["下半身", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([-0.24102019, 9.79926074, 1.08498769]),
+        bone_matrixes["下半身先", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([0.90331914, 10.27362702, 1.009499759]),
+        bone_matrixes["腰キャンセル左", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([0.90331914, 10.27362702, 1.00949975]),
+        bone_matrixes["左足", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([0.08276818, 5.59348757, -1.24981795]),
+        bone_matrixes["左ひざ", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([5.63290634e-01, -2.12439821e-04, -3.87768478e-01]),
+        bone_matrixes["左つま先", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([0.90331914, 10.27362702, 1.00949975]),
+        bone_matrixes["左足D", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([0.23453057, 5.6736954, -0.76228439]),
+        bone_matrixes["左ひざ2", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([0.12060311, 4.95396153, -1.23761938]),
+        bone_matrixes["左ひざ2先", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([0.90331914, 10.27362702, 1.00949975]),
+        bone_matrixes["左足y+", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([0.74736036, 9.38409308, 0.58008117]),
+        bone_matrixes["左足yTgt", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([0.74736036, 9.38409308, 0.58008117]),
+        bone_matrixes["左足yIK", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([-0.03018836, 10.40081089, 1.26859617]),
+        bone_matrixes["左尻", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([0.08276818, 5.59348757, -1.24981795]),
+        bone_matrixes["左ひざD", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([0.08276818, 5.59348757, -1.24981795]),
+        bone_matrixes["左ひざsub", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([-0.09359026, 5.54494997, -1.80895985]),
+        bone_matrixes["左ひざsub先", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([1.23779916, 1.28891465, 1.65257835]),
+        bone_matrixes["左ひざD2", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([0.1106881, 4.98643066, -1.26321915]),
+        bone_matrixes["左ひざD2先", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([0.12060311, 4.95396153, -1.23761938]),
+        bone_matrixes["左ひざD2IK", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([0.88590917, 0.38407067, 0.56801614]),
+        bone_matrixes["左足ゆび", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([5.63290634e-01, -2.12439821e-04, -3.87768478e-01]),
+        bone_matrixes["左つま先D", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([0.90331914, 10.27362702, 1.00949975]),
+        bone_matrixes["左足s", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([0.08276818, 5.59348757, -1.24981795]),
+        bone_matrixes["左ひざs", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([1.23779916, 1.28891465, 1.65257835]),
+        bone_matrixes["左足首D", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([-1.14702363, -0.96110535, 0.45847444]),
+        bone_matrixes["左足先EX", 0].position.vector,
+        atol=0.01,
+    ).all()
+
+
+def test_read_by_filepath_ok_ik2() -> None:
+
+    import numpy as np
+
+    from mlib.pmx.pmx_collection import PmxModel
+    from mlib.pmx.pmx_reader import PmxReader
+    from mlib.vmd.vmd_collection import VmdMotion
+    from mlib.vmd.vmd_reader import VmdReader
+
+    vmd_reader = VmdReader()
+    motion: VmdMotion = vmd_reader.read_by_filepath(
+        "C:/MMD/mmd_base/tests/resources/唱(ダンスのみ)_0274F.vmd"
+    )
+    pmx_reader = PmxReader()
+    model: PmxModel = pmx_reader.read_by_filepath(
+        "D:/MMD/MikuMikuDance_v926x64/UserFile/Model/VOCALOID/初音ミク/ISAO式ミク/I_ミクv4/Miku_V4_準標準.pmx"
+    )
+
+    # キーフレ
+    bone_matrixes = motion.animate_bone([0], model)
+
+    assert np.isclose(
+        np.array([0, 0, 0]),
+        bone_matrixes["全ての親", 0].position.vector,
+    ).all()
+    assert np.isclose(
+        np.array([0.04952335, 9.0, 1.72378033]),
+        bone_matrixes["センター", 0].position.vector,
+    ).all()
+    assert np.isclose(
+        np.array([0.04952335, 7.97980869, 1.72378033]),
+        bone_matrixes["グルーブ", 0].position.vector,
+    ).all()
+
+    assert np.isclose(
+        np.array([0.04952335, 11.02838314, 2.29172656]),
+        bone_matrixes["腰", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([0.04952335, 11.9671191, 1.06765032]),
+        bone_matrixes["上半身", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([0.26284261, 13.14576297, 0.84720008]),
+        bone_matrixes["上半身2", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([0.33636433, 15.27729547, 0.77435588]),
+        bone_matrixes["右肩P", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([0.33636433, 15.27729547, 0.77435588]),
+        bone_matrixes["右肩", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([-0.63104276, 15.44542768, 0.8507726]),
+        bone_matrixes["右肩C", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([-0.63104276, 15.44542768, 0.8507726]),
+        bone_matrixes["右腕", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([-0.90326269, 14.53727204, 0.7925801]),
+        bone_matrixes["右腕捩", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([-1.50502977, 12.52976106, 0.66393998]),
+        bone_matrixes["右ひじ", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([-1.46843236, 12.88476121, 0.12831076]),
+        bone_matrixes["右手捩", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([-1.36287259, 13.90869981, -1.41662258]),
+        bone_matrixes["右手首", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([-1.81521586, 14.00661535, -1.55616424]),
+        bone_matrixes["右手先", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([-0.63104276, 15.44542768, 0.8507726]),
+        bone_matrixes["右腕YZ", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([-0.72589296, 15.12898892, 0.83049645]),
+        bone_matrixes["右腕YZ先", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([-0.72589374, 15.12898632, 0.83049628]),
+        bone_matrixes["右腕YZIK", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([-0.63104276, 15.44542768, 0.8507726]),
+        bone_matrixes["右腕X", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([-1.13337279, 15.59959111, 0.79468785]),
+        bone_matrixes["右腕X先", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([-1.1253241, 15.60029489, 0.7461294]),
+        bone_matrixes["右腕XIK", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([-0.90325538, 14.53727326, 0.79258165]),
+        bone_matrixes["右腕捩YZ", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([-1.01247534, 14.17289417, 0.76923367]),
+        bone_matrixes["右腕捩YZTgt", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([-1.01248754, 14.17289597, 0.76923112]),
+        bone_matrixes["右腕捩YZIK", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([-0.90325538, 14.53727326, 0.79258165]),
+        bone_matrixes["右腕捩X", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([-1.40656426, 14.68386802, 0.85919594]),
+        bone_matrixes["右腕捩XTgt", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([-1.40657579, 14.68387899, 0.8591982]),
+        bone_matrixes["右腕捩XIK", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([-1.50499623, 12.52974836, 0.66394738]),
+        bone_matrixes["右ひじYZ", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([-1.48334366, 12.74011791, 0.34655051]),
+        bone_matrixes["右ひじYZ先", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([-1.48334297, 12.74012453, 0.34654052]),
+        bone_matrixes["右ひじYZIK", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([-1.50499623, 12.52974836, 0.66394738]),
+        bone_matrixes["右ひじX", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([-2.01179616, 12.66809052, 0.72106658]),
+        bone_matrixes["右ひじX先", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([-2.00760407, 12.67958516, 0.7289003]),
+        bone_matrixes["右ひじXIK", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([-1.50499623, 12.52974836, 0.66394738]),
+        bone_matrixes["右ひじY", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([-1.61429839, 12.16509505, 0.6405818]),
+        bone_matrixes["右ひじY先", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([-1.48334297, 12.74012453, 0.34654052]),
+        bone_matrixes["右ひじYIK", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([-1.46845628, 12.88475892, 0.12832214]),
+        bone_matrixes["右手捩YZ", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([-1.41168478, 13.4363328, -0.7038697]),
+        bone_matrixes["右手捩YZTgt", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([-1.41156715, 13.43632015, -0.70389025]),
+        bone_matrixes["右手捩YZIK", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([-1.46845628, 12.88475892, 0.12832214]),
+        bone_matrixes["右手捩X", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([-1.5965686, 12.06213832, -0.42564769]),
+        bone_matrixes["右手捩XTgt", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([-1.5965684, 12.06214091, -0.42565404]),
+        bone_matrixes["右手捩XIK", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([-1.7198605, 13.98597326, -1.5267472]),
+        bone_matrixes["右手YZ先", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([-1.71969424, 13.98593727, -1.52669587]),
+        bone_matrixes["右手YZIK", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([-1.36306295, 13.90872698, -1.41659848]),
+        bone_matrixes["右手X", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([-1.54727182, 13.56147176, -1.06342964]),
+        bone_matrixes["右手X先", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([-1.54700171, 13.5614545, -1.0633896]),
+        bone_matrixes["右手XIK", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([-0.90581859, 14.5370842, 0.80752276]),
+        bone_matrixes["右腕捩1", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([-0.99954005, 14.2243783, 0.78748743]),
+        bone_matrixes["右腕捩2", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([-1.10880907, 13.85976329, 0.76412793]),
+        bone_matrixes["右腕捩3", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([-1.21298069, 13.51216081, 0.74185819]),
+        bone_matrixes["右腕捩4", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([-1.5074743, 12.52953348, 0.67889319]),
+        bone_matrixes["右ひじsub", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([-1.48606988, 12.49512375, 1.1040098]),
+        bone_matrixes["右ひじsub先", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([-1.47286246, 12.87280799, 0.12010051]),
+        bone_matrixes["右手捩1", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([-1.45874646, 13.00975416, -0.08652926]),
+        bone_matrixes["右手捩2", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([-1.44072981, 13.18461598, -0.35036358]),
+        bone_matrixes["右手捩3", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([-1.42368773, 13.34980879, -0.59962077]),
+        bone_matrixes["右手捩4", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([-1.40457204, 13.511055, -0.84384039]),
+        bone_matrixes["右手捩5", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([-1.39275926, 13.62582429, -1.01699954]),
+        bone_matrixes["右手捩6", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([-1.36500465, 13.89623575, -1.42501008]),
+        bone_matrixes["右手首R", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([-1.36500465, 13.89623575, -1.42501008]),
+        bone_matrixes["右手首1", 0].position.vector,
+        atol=0.01,
+    ).all()
+    assert np.isclose(
+        np.array([-1.47243053, 13.91720695, -1.52989243]),
+        bone_matrixes["右手首2", 0].position.vector,
         atol=0.01,
     ).all()
 

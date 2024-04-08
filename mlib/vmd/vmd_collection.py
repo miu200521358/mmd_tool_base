@@ -4,7 +4,7 @@ from enum import IntEnum, auto
 from functools import lru_cache
 from itertools import product
 from math import radians
-from typing import Iterable, Optional
+from typing import Iterable, Optional, Union
 
 import numpy as np
 from numpy.linalg import inv
@@ -82,7 +82,7 @@ class VmdBoneNameFrames(BaseIndexNameDictModel[VmdBoneFrame]):
         self._ik_indexes: list[int] = []
         self._register_indexes: list[int] = []
 
-    def __getitem__(self, key: int | str) -> VmdBoneFrame:
+    def __getitem__(self, key: Union[int, str]) -> VmdBoneFrame:
         if isinstance(key, str):
             return VmdBoneFrame(name=key, index=0)
 
@@ -2050,7 +2050,7 @@ class VmdMorphNameFrames(BaseIndexNameDictModel[VmdMorphFrame]):
     モーフ名別キーフレ辞書
     """
 
-    def __getitem__(self, key: int | str) -> VmdMorphFrame:
+    def __getitem__(self, key: Union[int, str]) -> VmdMorphFrame:
         if isinstance(key, str):
             return VmdMorphFrame(name=key, index=0)
 

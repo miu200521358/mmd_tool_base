@@ -133,4 +133,6 @@ void main() {
     // スペキュラ色計算
     vec3 HalfVector = normalize( normalize(eye) + -lightDirection );
     vertexSpecular = pow( max(0, dot( HalfVector, vetexNormal )), max(0.000001, specular.w) ) * specular.rgb;
+
+    vertexColor.rgb = vetexNormal;
 }

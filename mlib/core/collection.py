@@ -108,13 +108,13 @@ class BaseIndexNameDictModel(Generic[TBaseIndexNameModel], BaseModel):
         self.indexes: list[int] = []
         self._names: dict[str, int] = {}
 
-    def __getitem__(self, key: int | str) -> TBaseIndexNameModel:
+    def __getitem__(self, key: Union[int, str]) -> TBaseIndexNameModel:
         if isinstance(key, str):
             return self.get_by_name(key)
         else:
             return self.get_by_index(int(key))
 
-    def __delitem__(self, key: int | str) -> None:
+    def __delitem__(self, key: Union[int, str]) -> None:
         if isinstance(key, str):
             if key in self._names and self._names[key] in self.data:
                 del self.data[self._names[key]]
@@ -316,7 +316,7 @@ class BaseIndexNameDictModel(Generic[TBaseIndexNameModel], BaseModel):
     def __iter__(self) -> Iterator[TBaseIndexNameModel]:
         return iter([self.data[k] for k in sorted(self.data.keys())])
 
-    def __contains__(self, key: int | str) -> bool:
+    def __contains__(self, key: Union[int, str]) -> bool:
         if isinstance(key, str):
             return key in self._names
         return int(key) in self.data

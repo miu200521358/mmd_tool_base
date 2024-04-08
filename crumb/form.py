@@ -14,15 +14,11 @@ sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 from mlib.core.exception import MApplicationException  # noqa: E402
 from mlib.core.logger import MLogger  # noqa: E402
-from mlib.core.math import MQuaternion  # noqa: E402
 from mlib.pmx.canvas import PmxCanvas, SyncSubCanvasWindow  # noqa: E402
 from mlib.pmx.pmx_collection import PmxModel  # noqa: E402
 from mlib.pmx.pmx_part import (  # noqa: E402
     Bone,
-    BoneMorphOffset,
     Face,
-    Morph,
-    MorphType,
     SphereMode,
     Texture,
     ToonSharing,
@@ -49,7 +45,6 @@ from mlib.service.form.widgets.spin_ctrl import (  # noqa: E402
 )
 from mlib.utils.file_utils import save_histories, separate_path  # noqa: E402
 from mlib.vmd.vmd_collection import VmdMotion  # noqa: E402
-from mlib.vmd.vmd_part import VmdMorphFrame  # noqa: E402
 
 logger = MLogger(os.path.basename(__file__))
 __ = logger.get_text
@@ -293,16 +288,20 @@ class SaveWorker(BaseWorker):
                         "tail": [dress.bones[dress_bone.tail_index].name],
                         "effect": [dress.bones[dress_bone.effect_index].name],
                         "ik_target": [
-                            dress.bones[dress_bone.ik.bone_index].name
-                            if dress_bone.ik
-                            else Bone.SYSTEM_ROOT_NAME
+                            (
+                                dress.bones[dress_bone.ik.bone_index].name
+                                if dress_bone.ik
+                                else Bone.SYSTEM_ROOT_NAME
+                            )
                         ],
-                        "ik_link": [
-                            dress.bones[link.bone_index].name
-                            for link in dress_bone.ik.links
-                        ]
-                        if dress_bone.ik
-                        else [],
+                        "ik_link": (
+                            [
+                                dress.bones[link.bone_index].name
+                                for link in dress_bone.ik.links
+                            ]
+                            if dress_bone.ik
+                            else []
+                        ),
                     }
                     dress_model.bones.append(copy_bone, is_sort=False)
                     dress_bone_map[bone.index] = copy_bone.index
@@ -314,13 +313,17 @@ class SaveWorker(BaseWorker):
                 "tail": [model.bones[bone.tail_index].name],
                 "effect": [model.bones[bone.effect_index].name],
                 "ik_target": [
-                    model.bones[bone.ik.bone_index].name
-                    if bone.ik
-                    else Bone.SYSTEM_ROOT_NAME
+                    (
+                        model.bones[bone.ik.bone_index].name
+                        if bone.ik
+                        else Bone.SYSTEM_ROOT_NAME
+                    )
                 ],
-                "ik_link": [model.bones[link.bone_index].name for link in bone.ik.links]
-                if bone.ik
-                else [],
+                "ik_link": (
+                    [model.bones[link.bone_index].name for link in bone.ik.links]
+                    if bone.ik
+                    else []
+                ),
             }
             dress_model.bones.append(copy_bone, is_sort=False)
             model_bone_map[bone.index] = copy_bone.index
@@ -336,13 +339,17 @@ class SaveWorker(BaseWorker):
                 "tail": [dress.bones[bone.tail_index].name],
                 "effect": [dress.bones[bone.effect_index].name],
                 "ik_target": [
-                    dress.bones[bone.ik.bone_index].name
-                    if bone.ik
-                    else Bone.SYSTEM_ROOT_NAME
+                    (
+                        dress.bones[bone.ik.bone_index].name
+                        if bone.ik
+                        else Bone.SYSTEM_ROOT_NAME
+                    )
                 ],
-                "ik_link": [dress.bones[link.bone_index].name for link in bone.ik.links]
-                if bone.ik
-                else [],
+                "ik_link": (
+                    [dress.bones[link.bone_index].name for link in bone.ik.links]
+                    if bone.ik
+                    else []
+                ),
             }
             dress_model.bones.append(copy_bone, is_sort=False)
             dress_bone_map[bone.index] = copy_bone.index
@@ -803,10 +810,14 @@ class TestFrame(NotebookFrame):
             self.notebook.ChangeSelection(self.file_panel.tab_idx)
             if not self.worker.started:
                 if not self.file_panel.model_ctrl.valid():
-                    logger.warning("モデル欄に有効なパスが設定されていない為、タブ遷移を中断します。")
+                    logger.warning(
+                        "モデル欄に有効なパスが設定されていない為、タブ遷移を中断します。"
+                    )
                     return
                 if not self.file_panel.dress_ctrl.valid():
-                    logger.warning("衣装欄に有効なパスが設定されていない為、タブ遷移を中断します。")
+                    logger.warning(
+                        "衣装欄に有効なパスが設定されていない為、タブ遷移を中断します。"
+                    )
                     return
                 if (
                     not self.file_panel.model_ctrl.data
@@ -902,26 +913,26 @@ class TestFrame(NotebookFrame):
         # bf.local_scale = MVector3D(0, 1, 1)
         # dress_motion.bones["頭"].append(bf)
 
-        # -------------------
-        # モーフ追加
-        morph_bone_name = "上半身"
-        morph = Morph(name=morph_bone_name)
-        morph.morph_type = MorphType.BONE
-        offset1 = BoneMorphOffset(
-            # dress.bones[morph_bone_name].index, local_scale=MVector3D(1, 0, 0)
-            dress.bones[morph_bone_name].index,
-            qq=MQuaternion.from_euler_degrees(90, 0, 0),
-        )
-        morph.offsets.append(offset1)
+        # # -------------------
+        # # モーフ追加
+        # morph_bone_name = "上半身"
+        # morph = Morph(name=morph_bone_name)
+        # morph.morph_type = MorphType.BONE
+        # offset1 = BoneMorphOffset(
+        #     # dress.bones[morph_bone_name].index, local_scale=MVector3D(1, 0, 0)
+        #     dress.bones[morph_bone_name].index,
+        #     qq=MQuaternion.from_euler_degrees(90, 0, 0),
+        # )
+        # morph.offsets.append(offset1)
         # offset2 = BoneMorphOffset(
         #     dress.bones["左腕捩"].index, local_scale=MVector3D(1, 0, 0)
         # )
         # morph.offsets.append(offset2)
-        dress.morphs.append(morph)
+        # dress.morphs.append(morph)
 
-        dress_motion.morphs[morph_bone_name].append(
-            VmdMorphFrame(0, morph_bone_name, 1)
-        )
+        # dress_motion.morphs[morph_bone_name].append(
+        #     VmdMorphFrame(0, morph_bone_name, 1)
+        # )
         # -------------------
 
         # dress.update_vertices_by_bone()

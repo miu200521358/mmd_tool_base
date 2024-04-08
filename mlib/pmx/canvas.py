@@ -23,7 +23,7 @@ from mlib.utils.file_utils import get_root_dir
 from mlib.vmd.vmd_collection import VmdMotion
 from mlib.vmd.vmd_tree import VmdBoneFrameTrees
 
-logger = MLogger(os.path.basename(__file__), level=10)
+logger = MLogger(os.path.basename(__file__), level=0)
 __ = logger.get_text
 
 
@@ -281,9 +281,7 @@ class PmxCanvas(glcanvas.GLCanvas):
             self.draw()
             self.SwapBuffers()
         except MViewerException:
-            error_msg = (
-                "ビューワーの描画に失敗しました。\n一度ツールを立ち上げ直して再度実行していただき、それでも解決しなかった場合、作者にご連絡下さい。"
-            )
+            error_msg = "ビューワーの描画に失敗しました。\n一度ツールを立ち上げ直して再度実行していただき、それでも解決しなかった場合、作者にご連絡下さい。"
             logger.critical(error_msg)
 
             self.clear_model_set()

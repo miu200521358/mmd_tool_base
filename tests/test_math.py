@@ -2404,6 +2404,23 @@ def test_evaluate():
     assert t == et, f"Expected {et}, but got {t}"
 
 
+def test_evaluate2():
+    from mlib.core.interpolation import Interpolation, evaluate
+    from mlib.core.math import MVector2D
+
+    interpolation = Interpolation()
+    interpolation.start = MVector2D(46, 33)
+    interpolation.end = MVector2D(80, 88)
+    start = 272
+    now = 278
+    end = 280
+    x, y, t = evaluate(interpolation, start, now, end)
+    ex, ey, et = (0.75, 0.7628337691389842, 0.7614940998277816)
+    assert x == ex, f"Expected {ex}, but got {x}"
+    assert y == ey, f"Expected {ey}, but got {y}"
+    assert t == et, f"Expected {et}, but got {t}"
+
+
 def test_MQuaternion_to_fixed_axis_rotation():
     import numpy as np
 

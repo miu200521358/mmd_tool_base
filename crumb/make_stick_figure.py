@@ -23,6 +23,7 @@ from mlib.utils import file_utils  # noqa: E402
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--path", default="", type=str)
+parser.add_argument("--all", default=False, type=bool)
 args, argv = parser.parse_known_args()
 
 pmx_reader = PmxReader()
@@ -124,6 +125,8 @@ WIDTH = 0.1
 NORMAL_VEC = MVector3D(0, 1, 0)
 
 model_dir_path, model_file_name, model_ext = file_utils.separate_path(model.path)
+if args.all:
+    model_file_name += "_all"
 
 stick_model = PmxModel(os.path.join(model_dir_path, f"bone_{model_file_name}.pmx"))
 stick_model.model_name = "①" + model_file_name + "[Bone]"
@@ -165,6 +168,13 @@ twist_material.ambient = MVector3D(0, 1, 0)
 twist_material.draw_flg = DrawFlg.DOUBLE_SIDED_DRAWING
 stick_model.materials.append(twist_material)
 
+# その他ボーン材質作成
+other_material = Material(name="その他材質")
+other_material.diffuse = MVector4D(1, 1, 1, 1)
+other_material.ambient = MVector3D(1, 0, 1)
+other_material.draw_flg = DrawFlg.DOUBLE_SIDED_DRAWING
+stick_model.materials.append(other_material)
+
 stick_model.display_slots["Root"].references.append(
     DisplaySlotReference(display_index=stick_model.bones["全ての親"].index)
 )
@@ -181,18 +191,57 @@ for ds in model.display_slots:
             )
         )
 
+target_bone_names = (
+    [
+        bone.name
+        for bone in model.bones
+        if True
+        not in [
+            exclude_name in bone.name
+            for exclude_name in [
+                "エッジ",
+                "帽子",
+                "リボン",
+                "眼鏡",
+                "耳",
+                "髪",
+                "ER",
+                "鼻",
+                "目",
+                "帯",
+                "fs",
+                "袖B",
+                "袖C",
+                "袖D",
+                "袖E",
+                "靴",
+                "skirt",
+                "掴",
+            ]
+        ]
+    ]
+    if args.all
+    else (
+        OUTPUT_CENTER_NAMES
+        + OUTPUT_GROOVE_NAMES
+        + OUTPUT_TRUNK_NAMES
+        + OUTPUT_BONE_NAMES
+        + OUTPUT_TWIST_NAMES
+    )
+)
 
-for bone_name in (
-    OUTPUT_CENTER_NAMES
-    + OUTPUT_GROOVE_NAMES
-    + OUTPUT_TRUNK_NAMES
-    + OUTPUT_BONE_NAMES
-    + OUTPUT_TWIST_NAMES
-):
+print(target_bone_names)
+
+for bone_name in target_bone_names:
     if bone_name not in stick_model.bones:
         continue
 
     bone = stick_model.bones[bone_name]
+    parent_bone_index = (
+        stick_model.bones[bone.parent_index].index
+        if bone.parent_index >= 0
+        else bone.index
+    )
     if BoneFlg.IS_VISIBLE not in bone.bone_flg:
         # 非表示ボーンの場合、表示する
         bone.bone_flg |= BoneFlg.IS_VISIBLE | BoneFlg.CAN_MANIPULATE
@@ -200,8 +249,10 @@ for bone_name in (
     from_pos = bone.position
     if bone.name in OUTPUT_CENTER_NAMES:
         tail_pos = MVector3D(0, 1.5, 0) + bone.position
+        parent_bone_index = bone.index
     elif bone.name in OUTPUT_GROOVE_NAMES:
         tail_pos = MVector3D(0, -1.5, 0) + bone.position
+        parent_bone_index = bone.index
     elif bone.name in OUTPUT_TWIST_NAMES:
         local_y_vector = MVector3D(0, 0.5, 0)
         local_x_vector = (
@@ -210,14 +261,25 @@ for bone_name in (
         local_z_vector = local_y_vector.cross(bone.local_x_vector).normalized()
 
         tail_pos = local_z_vector + bone.position
+        parent_bone_index = bone.index
     elif bone.name == "下半身":
-        tail_pos = model.bones["足中心"].position
+        if args.all:
+            tail_pos = MVector3D(0, -1, 0) + bone.position
+            parent_bone_index = bone.index
+        else:
+            tail_pos = model.bones["足中心"].position
     elif "腰キャンセル" in bone.name:
-        tail_pos = model.bones["足中心"].position
+        if args.all:
+            tail_pos = bone.position
+            parent_bone_index = bone.index
+        else:
+            tail_pos = model.bones["足中心"].position
     elif bone.name in ("右腕", "左腕"):
         tail_pos = model.bones[f"{bone.name[0]}ひじ"].position
+        parent_bone_index = model.bones[f"{bone.name[0]}ひじ"].index
     elif bone.name in ("右ひじ", "左ひじ"):
         tail_pos = model.bones[f"{bone.name[0]}手首"].position
+        parent_bone_index = model.bones[f"{bone.name[0]}手首"].index
     else:
         tail_pos = bone.tail_relative_position + bone.position
 
@@ -231,7 +293,7 @@ for bone_name in (
     v2 = Vertex()
     v2.position = tail_pos
     v2.normal = NORMAL_VEC
-    v2.deform = Bdef1(bone.index)
+    v2.deform = Bdef1(parent_bone_index)
     stick_model.vertices.append(v2)
 
     v3 = Vertex()
@@ -243,7 +305,7 @@ for bone_name in (
     v4 = Vertex()
     v4.position = tail_pos + MVector3D(WIDTH, 0, 0)
     v4.normal = NORMAL_VEC
-    v4.deform = Bdef1(bone.index)
+    v4.deform = Bdef1(parent_bone_index)
     stick_model.vertices.append(v4)
 
     v5 = Vertex()
@@ -255,7 +317,7 @@ for bone_name in (
     v6 = Vertex()
     v6.position = tail_pos + MVector3D(WIDTH, WIDTH, 0)
     v6.normal = NORMAL_VEC
-    v6.deform = Bdef1(bone.index)
+    v6.deform = Bdef1(parent_bone_index)
     stick_model.vertices.append(v6)
 
     v7 = Vertex()
@@ -267,7 +329,7 @@ for bone_name in (
     v8 = Vertex()
     v8.position = tail_pos + MVector3D(0, 0, WIDTH)
     v8.normal = NORMAL_VEC
-    v8.deform = Bdef1(bone.index)
+    v8.deform = Bdef1(parent_bone_index)
     stick_model.vertices.append(v8)
 
     stick_model.faces.append(
@@ -303,8 +365,10 @@ for bone_name in (
         twist_material.vertices_count += 24
     elif bone.name in OUTPUT_TRUNK_NAMES:
         trunk_material.vertices_count += 24
-    else:
+    elif bone.name in OUTPUT_BONE_NAMES:
         bone_material.vertices_count += 24
+    else:
+        other_material.vertices_count += 24
 
 PmxWriter(stick_model, stick_model.path, include_system=True).save()
 
