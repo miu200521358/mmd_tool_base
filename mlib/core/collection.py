@@ -1,6 +1,6 @@
 import hashlib
 from bisect import bisect_left
-from typing import Generic, Iterator, Optional, TypeVar
+from typing import Generic, Iterator, Optional, TypeVar, Union
 
 from mlib.core.base import BaseModel, Encoding
 from mlib.core.part import BaseIndexModel, BaseIndexNameModel
