@@ -1,7 +1,7 @@
 import operator
 from enum import IntEnum, auto
 from functools import lru_cache
-from math import acos, asin, atan2, cos, degrees, pi, radians, sin, sqrt
+from math import acos, asin, atan2, cos, degrees, radians, sin, sqrt
 from typing import Optional, Type, TypeVar, Union
 
 import numpy as np
@@ -957,6 +957,12 @@ class MQuaternion(MVector):
         v.vector.components /= l2
         self.vector = v.vector
 
+    #  最短回転に変換します
+    def shorten(self) -> "MQuaternion":
+        if self.scalar < 0:
+            return MQuaternion(-self.scalar, -self.x, -self.y, -self.z)
+        return self
+
     def to_vector4(self) -> MVector4D:
         return MVector4D(self.x, self.y, self.z, self.scalar)
 
@@ -1127,13 +1133,11 @@ class MQuaternion(MVector):
         MQuaternion
         """
         normalized_fixed_axis = fixed_axis.normalized()
-        theta = acos(max(-1, min(1, normalized_fixed_axis.dot(self.xyz.normalized()))))
-        fixed_qq_axis: MVector3D = (
-            normalized_fixed_axis * (1 if theta < pi / 2 else -1) * self.xyz.length()
-        )
-        return MQuaternion(
-            self.scalar, fixed_qq_axis.x, fixed_qq_axis.y, fixed_qq_axis.z
-        ).normalized()
+        fixed_qq_axis = self.xyz.normalized()
+        rad = self.to_radian()
+        if normalized_fixed_axis.dot(fixed_qq_axis) < 0:
+            rad = -rad
+        return MQuaternion.from_axis_angles(normalized_fixed_axis, rad)
 
     def to_other_axis_rotation(self, other_axis: MVector3D) -> "MQuaternion":
         """
