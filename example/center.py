@@ -3,7 +3,7 @@ import sys
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
-from mlib.core.math import MMatrix4x4, MQuaternion, MVector3D
+from mlib.domain.math import MMatrix4x4, MQuaternion, MVector3D
 from mlib.pmx.pmx_collection import PmxModel
 from mlib.pmx.pmx_reader import PmxReader
 from mlib.vmd.vmd_collection import VmdMotion

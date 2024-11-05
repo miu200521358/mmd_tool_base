@@ -7,8 +7,8 @@ from glob import glob
 from pathlib import Path
 from typing import Any
 
-from mlib.core.base import FileType
-from mlib.core.logger import MLogger
+from mlib.domain.base import FileType
+from mlib.domain.logger import MLogger
 
 logger = MLogger(os.path.basename(__file__))
 

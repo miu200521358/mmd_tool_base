@@ -1,7 +1,7 @@
 from PIL import Image
-from mlib.core.base import FileType
-from mlib.core.collection import BaseHashModel
-from mlib.core.reader import BaseReader
+from mlib.domain.base import FileType
+from mlib.domain.collection import BaseHashModel
+from mlib.domain.reader import BaseReader
 
 
 class ImageModel(BaseHashModel):

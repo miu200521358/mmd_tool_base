@@ -5,7 +5,7 @@ from winsound import SND_ALIAS, PlaySound
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
-from mlib.core.math import MVector3D, MVector4D  # noqa: E402
+from mlib.domain.math import MVector3D, MVector4D  # noqa: E402
 from mlib.pmx.bone_setting import BoneFlg  # noqa: E402
 from mlib.pmx.pmx_collection import PmxModel  # noqa: E402
 from mlib.pmx.pmx_part import (  # noqa: E402

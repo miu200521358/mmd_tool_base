@@ -5,7 +5,7 @@ from winsound import SND_ALIAS, PlaySound
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
-from mlib.core.math import MQuaternion  # noqa: E402
+from mlib.domain.math import MQuaternion  # noqa: E402
 from mlib.pmx.pmx_collection import PmxModel  # noqa: E402
 from mlib.pmx.pmx_reader import PmxReader  # noqa: E402
 from mlib.vmd.vmd_collection import VmdMotion  # noqa: E402

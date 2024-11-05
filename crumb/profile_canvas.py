@@ -7,13 +7,13 @@ import wx
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
-from mlib.core.logger import MLogger  # noqa: E402
+from mlib.domain.logger import MLogger  # noqa: E402
 from mlib.pmx.canvas import PmxCanvas  # noqa: E402
 from mlib.pmx.pmx_reader import PmxReader  # noqa: E402
-from mlib.service.form.notebook_frame import NotebookFrame  # noqa: E402
-from mlib.service.form.notebook_panel import NotebookPanel  # noqa: E402
-from mlib.service.form.widgets.frame_slider_ctrl import FrameSliderCtrl  # noqa: E402
-from mlib.service.form.widgets.spin_ctrl import WheelSpinCtrl  # noqa: E402
+from mlib.interface.notebook_frame import NotebookFrame  # noqa: E402
+from mlib.interface.notebook_panel import NotebookPanel  # noqa: E402
+from mlib.interface.widgets.frame_slider_ctrl import FrameSliderCtrl  # noqa: E402
+from mlib.interface.widgets.spin_ctrl import WheelSpinCtrl  # noqa: E402
 from mlib.vmd.vmd_reader import VmdReader  # noqa: E402
 
 logger = MLogger(os.path.basename(__file__))

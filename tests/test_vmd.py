@@ -2,14 +2,14 @@ from multiprocessing import freeze_support
 
 import pytest
 
-from mlib.core.math import MQuaternion, MVector2D, MVector3D
+from mlib.domain.math import MQuaternion, MVector2D, MVector3D
 from mlib.vmd.vmd_part import VmdBoneFrame
 
 
 def test_read_by_filepath_error():
     import os
 
-    from mlib.core.exception import MParseException
+    from mlib.domain.exception import MParseException
     from mlib.vmd.vmd_reader import VmdReader
 
     reader = VmdReader()

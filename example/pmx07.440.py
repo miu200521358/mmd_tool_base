@@ -14,7 +14,7 @@ from OpenGL.GL import shaders
 from PIL import Image, ImageOps
 from wx import glcanvas
 
-from mlib.core.math import MMatrix4x4, MQuaternion, MVector3D
+from mlib.domain.math import MMatrix4x4, MQuaternion, MVector3D
 from mlib.pmx.pmx_collection import PmxModel
 from mlib.pmx.pmx_reader import PmxReader
 
