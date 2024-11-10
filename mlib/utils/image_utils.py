@@ -38,8 +38,8 @@ class ImageReader(BaseReader[ImageModel]):
         return FileType.IMAGE.value
 
     @property
-    def file_ext(self) -> str:
-        return FileType.IMAGE.name.lower()
+    def file_exts(self) -> list[str]:
+        return ["png", "jpg", "jpeg", "bmp", "gif"]
 
     @property
     def file_type(self) -> FileType:

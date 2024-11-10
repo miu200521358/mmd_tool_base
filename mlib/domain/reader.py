@@ -34,7 +34,7 @@ class BaseReader(Generic[TBaseHashModel], BaseModel, metaclass=ABCMeta):
         raise NotImplementedError()
 
     @property
-    def file_ext(self) -> str:
+    def file_exts(self) -> list[str]:
         """ファイル拡張子を返す"""
         raise NotImplementedError()
 

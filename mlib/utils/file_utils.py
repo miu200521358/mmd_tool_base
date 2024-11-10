@@ -122,7 +122,7 @@ def validate_file(
 
     if file_type == FileType.IMAGE:
         # 画像系は固定拡張子
-        if file_ext[1:].lower() not in ("png", "jpg", "jpeg", "bmp"):
+        if file_ext[1:].lower() not in ("png", "jpg", "jpeg", "bmp", "gif"):
             return False
     else:
         if file_ext[1:].lower() not in file_type.name.lower():

@@ -38,6 +38,7 @@ class MFilePickerCtrl(Generic[TBaseHashModel, TBaseReader]):
         is_show_name: bool = True,
         name_spacer: int = 0,
         is_save: bool = False,
+        is_aster: bool = False,
         tooltip: str = "",
         file_change_event=None,
     ) -> None:
@@ -53,6 +54,7 @@ class MFilePickerCtrl(Generic[TBaseHashModel, TBaseReader]):
         self.is_show_name = is_show_name
         self.file_change_event = file_change_event
         self.root_sizer = wx.BoxSizer(wx.VERTICAL)
+        self.is_aster = is_aster
 
         self._initialize_ui(name_spacer, tooltip)
         self._initialize_event()
@@ -209,6 +211,10 @@ class MFilePickerCtrl(Generic[TBaseHashModel, TBaseReader]):
     def path(self, v: str) -> None:
         if self.valid(v):
             self.file_ctrl.SetPath(v)
+        elif v:
+            _, file_name, _ = separate_path(v)
+            if "*" in file_name:
+                self.file_ctrl.SetPath(v)
 
     @property
     def separated_path(self) -> tuple[str, str, str]:
@@ -333,25 +339,24 @@ class MFileDropTarget(wx.FileDropTarget):
 
             return True
 
-        # TODO アスタリスクの許容
-        # # アスタリスクOKの場合、フォルダの投入を許可する
-        # if os.path.isdir(files[0]) and self.is_aster:
-        #     # フォルダを投入された場合、フォルダ内にvmdもしくはvpdがあれば、受け付ける
-        #     child_file_name_exts = [os.path.splitext(filename) for filename in os.listdir(files[0])
-        # if os.path.isfile(os.path.join(files[0], filename))]
+        # アスタリスクOKの場合、フォルダの投入を許可する
+        if os.path.isdir(files[0]) and self.parent.is_aster:
+            # フォルダを投入された場合、フォルダ内に許容拡張子があれば、受け付ける
+            child_file_name_exts = [os.path.splitext(filename) for filename in os.listdir(files[0])
+                                        if os.path.isfile(os.path.join(files[0], filename))]
+            for ft in self.parent.reader.file_exts:
+                # 親の許容ファイルパス
+                for child_file_name, child_file_ext in child_file_name_exts:
+                    if child_file_ext[1:].lower() == ft:
+                        # 子のファイル拡張子が許容拡張子である場合、アスタリスクを入れて許可する
+                        astr_path = "{0}\\*.{1}".format(files[0], ft)
+                        self.parent.file_ctrl.SetPath(astr_path)
 
-        #     for ft in self.parent.file_type:
-        #         # 親の許容ファイルパス
-        #         for child_file_name, child_file_ext in child_file_name_exts:
-        #             if child_file_ext[1:].lower() == ft:
-        #                 # 子のファイル拡張子が許容拡張子である場合、アスタリスクを入れて許可する
-        #                 astr_path = "{0}\\*.{1}".format(files[0], ft)
-        #                 self.parent.file_ctrl.SetPath(astr_path)
+                        # ファイル変更処理
+                        if self.parent.file_change_event:
+                            self.parent.file_change_event(wx.FileDirPickerEvent())
 
-        #                 # ファイル変更処理
-        #                 self.parent.on_change_file(wx.FileDirPickerEvent())
-
-        #                 return True
+                        return True
 
         logger.warning(
             "{t}に入力されたファイル拡張子を受け付けられませんでした。{y}拡張子のファイルを入力してください。\n入力ファイルパス: {p}",
@@ -376,6 +381,7 @@ class MImagePickerCtrl(MFilePickerCtrl[ImageModel, ImageReader]):
         is_show_name: bool = False,
         name_spacer: int = 0,
         is_save: bool = False,
+        is_aster = False,
         tooltip: str = "",
         file_change_event=None,
     ) -> None:
@@ -389,6 +395,7 @@ class MImagePickerCtrl(MFilePickerCtrl[ImageModel, ImageReader]):
             is_show_name,
             name_spacer,
             is_save,
+            is_aster,
             tooltip,
             file_change_event,
         )
