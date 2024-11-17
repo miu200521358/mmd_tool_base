@@ -58,6 +58,8 @@ class MFilePickerCtrl(Generic[TBaseHashModel, TBaseReader]):
         self.is_aster = is_aster
         self.file_choice_names = file_choice_names
         self.paths = []
+        if self.file_choice_names:
+            self.paths = ["" for _ in range(len(self.file_choice_names))]
 
         self._initialize_ui(name_spacer, tooltip)
         self._initialize_event()
@@ -219,9 +221,6 @@ class MFilePickerCtrl(Generic[TBaseHashModel, TBaseReader]):
             self.file_ctrl.SetPath(choiceDialog.GetStringSelection())
 
             if self.paths and self.file_choice_ctrl:
-                for n in range(self.file_choice_ctrl.GetSelection() + 1):
-                    if len(self.paths) <= n:
-                        self.paths.append("")
                 self.paths[self.file_choice_ctrl.GetSelection()] = choiceDialog.GetStringSelection()
 
             self.file_change_event(wx.FileDirPickerEvent())
@@ -363,9 +362,6 @@ class MFileDropTarget(wx.FileDropTarget):
             self.parent.file_ctrl.SetPath(files[0])
 
             if self.parent.paths and self.parent.file_choice_ctrl:
-                for n in range(self.parent.file_choice_ctrl.GetSelection() + 1):
-                    if len(self.parent.paths) <= n:
-                        self.parent.paths.append("")
                 self.parent.paths[self.parent.file_choice_ctrl.GetSelection()] = files[0]
 
             # ファイル変更処理
