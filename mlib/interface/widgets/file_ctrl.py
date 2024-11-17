@@ -130,7 +130,6 @@ class MFilePickerCtrl(Generic[TBaseHashModel, TBaseReader]):
                 self.parent,
                 wx.ID_ANY,
                 choices=self.file_choice_names,
-                style=wx.CB_DROPDOWN | wx.CB_READONLY,
             )
             self.file_choice_ctrl.SetSelection(0)
             self.file_sizer.Add(self.file_choice_ctrl, 0, wx.ALL, 3)
