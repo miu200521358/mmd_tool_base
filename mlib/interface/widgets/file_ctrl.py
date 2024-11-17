@@ -265,6 +265,10 @@ class MFilePickerCtrl(Generic[TBaseHashModel, TBaseReader]):
         if not self.key or not self.valid():
             return
         insert_history(self.file_ctrl.GetPath(), self.frame.histories[self.key])
+        if self.paths:
+            for path in self.paths:
+                if path:
+                    insert_history(path, self.frame.histories[self.key])
 
     def read_name(self) -> bool:
         """
