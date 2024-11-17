@@ -41,6 +41,7 @@ class MFilePickerCtrl(Generic[TBaseHashModel, TBaseReader]):
         is_aster: bool = False,
         tooltip: str = "",
         file_change_event=None,
+        file_choice_names: Optional[list[str]] = None,
     ) -> None:
         self.parent = parent
         self.frame = frame
@@ -55,6 +56,8 @@ class MFilePickerCtrl(Generic[TBaseHashModel, TBaseReader]):
         self.file_change_event = file_change_event
         self.root_sizer = wx.BoxSizer(wx.VERTICAL)
         self.is_aster = is_aster
+        self.file_choice_names = file_choice_names
+        self.paths = []
 
         self._initialize_ui(name_spacer, tooltip)
         self._initialize_event()
@@ -66,11 +69,12 @@ class MFilePickerCtrl(Generic[TBaseHashModel, TBaseReader]):
         # ファイルタイトル
         self.title_sizer = wx.BoxSizer(wx.HORIZONTAL)
 
-        self.title_ctrl = wx.StaticText(
-            self.parent, wx.ID_ANY, self.title, wx.DefaultPosition, wx.Size(-1, -1), 0
-        )
-        self.title_ctrl.SetToolTip(__(tooltip))
-        self.title_sizer.Add(self.title_ctrl, 0, wx.ALL, 3)
+        if self.title:
+            self.title_ctrl = wx.StaticText(
+                self.parent, wx.ID_ANY, self.title, wx.DefaultPosition, wx.Size(-1, -1), 0
+            )
+            self.title_ctrl.SetToolTip(__(tooltip))
+            self.title_sizer.Add(self.title_ctrl, 0, wx.ALL, 3)
         self.spacer_ctrl = None
         self.name_ctrl = None
         self.name_blank_ctrl = None
@@ -121,6 +125,17 @@ class MFilePickerCtrl(Generic[TBaseHashModel, TBaseReader]):
         # ファイルコントロール
         self.file_sizer = wx.BoxSizer(wx.HORIZONTAL)
 
+        if self.file_choice_names:
+            self.file_choice_ctrl = wx.Choice(
+                self.parent,
+                wx.ID_ANY,
+                choices=self.file_choice_names,
+                style=wx.CB_DROPDOWN | wx.CB_READONLY,
+            )
+            self.file_choice_ctrl.SetSelection(0)
+            self.file_sizer.Add(self.file_choice_ctrl, 0, wx.ALL, 3)
+            self.file_choice_ctrl.Bind(wx.EVT_CHOICE, self.choice_event)
+
         # 読み取りか保存かでスタイルを変える
         file_ctrl_style = (
             wx.FLP_DEFAULT_STYLE
@@ -160,6 +175,13 @@ class MFilePickerCtrl(Generic[TBaseHashModel, TBaseReader]):
 
         self.root_sizer.Add(self.file_sizer, 0, wx.GROW | wx.ALL, 0)
 
+    def choice_event(self, event: wx.Event) -> None:
+        if not self.file_choice_ctrl:
+            return
+        choiceIdx = self.file_choice_ctrl.GetSelection()
+        if len(self.paths) > choiceIdx:
+            self.file_ctrl.SetPath(self.paths[choiceIdx])
+
     def _initialize_event(self) -> None:
         # D&Dの実装
         self.file_ctrl.SetDropTarget(MFileDropTarget(self))
@@ -196,6 +218,13 @@ class MFilePickerCtrl(Generic[TBaseHashModel, TBaseReader]):
 
             # ファイルピッカーに選択したパスを設定
             self.file_ctrl.SetPath(choiceDialog.GetStringSelection())
+
+            if self.paths and self.file_choice_ctrl:
+                for n in range(self.file_choice_ctrl.GetSelection() + 1):
+                    if len(self.paths) <= n:
+                        self.paths.append("")
+                self.paths[self.file_choice_ctrl.GetSelection()] = choiceDialog.GetStringSelection()
+
             self.file_change_event(wx.FileDirPickerEvent())
             self.file_ctrl.UpdatePickerFromTextCtrl()
             self.file_ctrl.SetInitialDirectory(
@@ -304,7 +333,8 @@ class MFilePickerCtrl(Generic[TBaseHashModel, TBaseReader]):
             self.history_ctrl.Enable(enable)
 
     def set_color(self, color: wx.Colour) -> None:
-        self.title_ctrl.SetBackgroundColour(color)
+        if self.title_ctrl:
+            self.title_ctrl.SetBackgroundColour(color)
         self.file_ctrl.SetBackgroundColour(color)
 
         if self.spacer_ctrl:
@@ -332,6 +362,12 @@ class MFileDropTarget(wx.FileDropTarget):
         if validate_file(files[0], self.parent.reader.file_type):
             # 拡張子を許容してたらOK
             self.parent.file_ctrl.SetPath(files[0])
+
+            if self.parent.paths and self.parent.file_choice_ctrl:
+                for n in range(self.parent.file_choice_ctrl.GetSelection() + 1):
+                    if len(self.parent.paths) <= n:
+                        self.parent.paths.append("")
+                self.parent.paths[self.parent.file_choice_ctrl.GetSelection()] = files[0]
 
             # ファイル変更処理
             self.parent.data = None
@@ -384,6 +420,7 @@ class MImagePickerCtrl(MFilePickerCtrl[ImageModel, ImageReader]):
         is_aster = False,
         tooltip: str = "",
         file_change_event=None,
+        file_choice_names: Optional[list[str]] = None,
     ) -> None:
         super().__init__(
             parent,
@@ -398,4 +435,5 @@ class MImagePickerCtrl(MFilePickerCtrl[ImageModel, ImageReader]):
             is_aster,
             tooltip,
             file_change_event,
+            file_choice_names,
         )
