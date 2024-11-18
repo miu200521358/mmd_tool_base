@@ -34,7 +34,7 @@ class ConsoleCtrl:
             "",
             wx.DefaultPosition,
             wx.Size(-1, rows),
-            wx.TE_READONLY | wx.TE_MULTILINE | wx.WANTS_CHARS,
+            wx.TE_READONLY | wx.TE_MULTILINE | wx.WANTS_CHARS | wx.TE_WORDWRAP,
         )
         self.text_ctrl.SetBackgroundColour(
             wx.SystemSettings.GetColour(wx.SYS_COLOUR_3DLIGHT)
