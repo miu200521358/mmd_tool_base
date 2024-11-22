@@ -64,6 +64,13 @@ class MFilePickerCtrl(Generic[TBaseHashModel, TBaseReader]):
         self._initialize_ui(name_spacer, tooltip)
         self._initialize_event()
 
+    def on_change_file(self, event: wx.FileDirPickerEvent) -> None:
+        if self.file_choice_names:
+            self.paths[self.file_choice_ctrl.GetSelection()] = self.file_ctrl.GetPath()
+
+        if self.file_change_event:
+            self.file_change_event(event)
+
     def set_parent_sizer(self, parent_sizer: wx.Sizer) -> None:
         parent_sizer.Add(self.root_sizer, 1, wx.GROW, 0)
 
@@ -190,8 +197,7 @@ class MFilePickerCtrl(Generic[TBaseHashModel, TBaseReader]):
         if not self.is_save:
             self.history_ctrl.Bind(wx.EVT_BUTTON, self.on_show_histories)
 
-        if self.file_change_event:
-            self.file_ctrl.Bind(wx.EVT_FILEPICKER_CHANGED, self.file_change_event)
+        self.file_ctrl.Bind(wx.EVT_FILEPICKER_CHANGED, self.on_change_file)
 
     def on_show_histories(self, event: wx.Event) -> None:
         """履歴一覧を表示する"""
@@ -219,11 +225,7 @@ class MFilePickerCtrl(Generic[TBaseHashModel, TBaseReader]):
 
             # ファイルピッカーに選択したパスを設定
             self.file_ctrl.SetPath(choiceDialog.GetStringSelection())
-
-            if self.paths and self.file_choice_ctrl:
-                self.paths[self.file_choice_ctrl.GetSelection()] = choiceDialog.GetStringSelection()
-
-            self.file_change_event(wx.FileDirPickerEvent())
+            self.on_change_file(wx.FileDirPickerEvent())
             self.file_ctrl.UpdatePickerFromTextCtrl()
             self.file_ctrl.SetInitialDirectory(
                 get_dir_path(choiceDialog.GetStringSelection())
@@ -267,7 +269,7 @@ class MFilePickerCtrl(Generic[TBaseHashModel, TBaseReader]):
         insert_history(self.file_ctrl.GetPath(), self.frame.histories[self.key])
         if self.paths:
             for path in self.paths:
-                if path:
+                if path and validate_file(path, self.reader.file_type):
                     insert_history(path, self.frame.histories[self.key])
 
     def read_name(self) -> bool:
@@ -370,7 +372,7 @@ class MFileDropTarget(wx.FileDropTarget):
 
             # ファイル変更処理
             self.parent.data = None
-            self.parent.file_change_event(wx.FileDirPickerEvent())
+            self.parent.on_change_file(wx.FileDirPickerEvent())
 
             return True
 
@@ -388,8 +390,7 @@ class MFileDropTarget(wx.FileDropTarget):
                         self.parent.file_ctrl.SetPath(astr_path)
 
                         # ファイル変更処理
-                        if self.parent.file_change_event:
-                            self.parent.file_change_event(wx.FileDirPickerEvent())
+                        self.parent.on_change_file(wx.FileDirPickerEvent())
 
                         return True
 
