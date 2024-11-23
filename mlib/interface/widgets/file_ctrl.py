@@ -345,6 +345,8 @@ class MFilePickerCtrl(Generic[TBaseHashModel, TBaseReader]):
         if not self.is_save:
             # 保存じゃなければ履歴ボタンを表示
             self.history_ctrl.Enable(enable)
+        if self.file_choice_ctrl:
+            self.file_choice_ctrl.Enable(enable)
 
     def set_color(self, color: wx.Colour) -> None:
         if self.title_ctrl:
