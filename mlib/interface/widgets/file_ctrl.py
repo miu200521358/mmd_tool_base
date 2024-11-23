@@ -42,6 +42,7 @@ class MFilePickerCtrl(Generic[TBaseHashModel, TBaseReader]):
         tooltip: str = "",
         file_change_event=None,
         file_choice_names: Optional[list[str]] = None,
+        file_choice_event=None,
     ) -> None:
         self.parent = parent
         self.frame = frame
@@ -58,6 +59,7 @@ class MFilePickerCtrl(Generic[TBaseHashModel, TBaseReader]):
         self.is_aster = is_aster
         self.file_choice_names = file_choice_names
         self.paths = []
+        self.file_choice_event = file_choice_event
         if self.file_choice_names:
             self.paths = ["" for _ in range(len(self.file_choice_names))]
 
@@ -80,7 +82,12 @@ class MFilePickerCtrl(Generic[TBaseHashModel, TBaseReader]):
 
         if self.title:
             self.title_ctrl = wx.StaticText(
-                self.parent, wx.ID_ANY, self.title, wx.DefaultPosition, wx.Size(-1, -1), 0
+                self.parent,
+                wx.ID_ANY,
+                self.title,
+                wx.DefaultPosition,
+                wx.Size(-1, -1),
+                0,
             )
             self.title_ctrl.SetToolTip(__(tooltip))
             self.title_sizer.Add(self.title_ctrl, 0, wx.ALL, 3)
@@ -189,6 +196,9 @@ class MFilePickerCtrl(Generic[TBaseHashModel, TBaseReader]):
         choiceIdx = self.file_choice_ctrl.GetSelection()
         if len(self.paths) > choiceIdx:
             self.file_ctrl.SetPath(self.paths[choiceIdx])
+
+            if self.file_choice_event:
+                self.file_choice_event(event, choiceIdx)
 
     def _initialize_event(self) -> None:
         # D&Dの実装
@@ -368,7 +378,9 @@ class MFileDropTarget(wx.FileDropTarget):
             self.parent.file_ctrl.SetPath(files[0])
 
             if self.parent.paths and self.parent.file_choice_ctrl:
-                self.parent.paths[self.parent.file_choice_ctrl.GetSelection()] = files[0]
+                self.parent.paths[self.parent.file_choice_ctrl.GetSelection()] = files[
+                    0
+                ]
 
             # ファイル変更処理
             self.parent.data = None
@@ -379,8 +391,11 @@ class MFileDropTarget(wx.FileDropTarget):
         # アスタリスクOKの場合、フォルダの投入を許可する
         if os.path.isdir(files[0]) and self.parent.is_aster:
             # フォルダを投入された場合、フォルダ内に許容拡張子があれば、受け付ける
-            child_file_name_exts = [os.path.splitext(filename) for filename in os.listdir(files[0])
-                                        if os.path.isfile(os.path.join(files[0], filename))]
+            child_file_name_exts = [
+                os.path.splitext(filename)
+                for filename in os.listdir(files[0])
+                if os.path.isfile(os.path.join(files[0], filename))
+            ]
             for ft in self.parent.reader.file_exts:
                 # 親の許容ファイルパス
                 for child_file_name, child_file_ext in child_file_name_exts:
@@ -417,10 +432,11 @@ class MImagePickerCtrl(MFilePickerCtrl[ImageModel, ImageReader]):
         is_show_name: bool = False,
         name_spacer: int = 0,
         is_save: bool = False,
-        is_aster = False,
+        is_aster=False,
         tooltip: str = "",
         file_change_event=None,
         file_choice_names: Optional[list[str]] = None,
+        file_choice_event=None,
     ) -> None:
         super().__init__(
             parent,
@@ -436,4 +452,5 @@ class MImagePickerCtrl(MFilePickerCtrl[ImageModel, ImageReader]):
             tooltip,
             file_change_event,
             file_choice_names,
+            file_choice_event,
         )
