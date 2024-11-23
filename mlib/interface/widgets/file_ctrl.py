@@ -60,8 +60,8 @@ class MFilePickerCtrl(Generic[TBaseHashModel, TBaseReader]):
         self.file_choice_names = file_choice_names
         self.paths = []
         self.file_choice_event = file_choice_event
-        if self.file_choice_names:
-            self.paths = ["" for _ in range(len(self.file_choice_names))]
+        if self.key and self.file_choice_names:
+            self.paths = [self.read_history_str(self.key, "", n) for n in range(len(self.file_choice_names))]
 
         self._initialize_ui(name_spacer, tooltip)
         self._initialize_event()
@@ -364,6 +364,15 @@ class MFilePickerCtrl(Generic[TBaseHashModel, TBaseReader]):
         if not self.name_ctrl:
             return ""
         return get_clear_path(self.name_ctrl.GetValue()[1:-1])
+
+    def read_history_str(self, key: str, initial: str, index: int = 0) -> str:
+        if not self.frame.histories[key]:
+            return initial
+
+        if len(self.frame.histories[key]) <= index:
+            return initial
+
+        return self.frame.histories[key][index]
 
 
 class MFileDropTarget(wx.FileDropTarget):
