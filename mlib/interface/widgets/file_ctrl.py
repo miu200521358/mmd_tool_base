@@ -141,6 +141,7 @@ class MFilePickerCtrl(Generic[TBaseHashModel, TBaseReader]):
         # ファイルコントロール
         self.file_sizer = wx.BoxSizer(wx.HORIZONTAL)
 
+        self.file_choice_ctrl = None
         if self.file_choice_names:
             self.file_choice_ctrl = wx.Choice(
                 self.parent,
